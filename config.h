@@ -5,14 +5,14 @@ static const unsigned int borderpx  = 2;        /* border pixel of windows */
 static const unsigned int snap      = 10;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = {"Font Awesome 5 Free-Solid-900:size=12"};
-static const char dmenufont[]       = "monospace:size=12";
+static const char *fonts[]          = {"Source Code Pro Semibold:style=Semibold:size=12", "Font Awesome 6 Free:style=Regular:size=12"};
+static const char dmenufont[]       = "monospace:size=16";
 //SourceCode-Bold
-static const char col_gray1[]       = "#701077";
-static const char col_gray2[]       = "#701077";
-static const char col_gray3[]       = "#f5b827";
-static const char col_gray4[]       = "#fffe8d";
-static const char col_cyan[]        = "#f5b827"; 
+static const char col_gray1[]       = "#0d0218";
+static const char col_gray2[]       = "#33075f";
+static const char col_gray3[]       = "#d70f73";
+static const char col_gray4[]       = "#fbd0e6";
+static const char col_cyan[]        = "#d70f73"; 
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
@@ -28,20 +28,29 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
-	{ "firefox",  NULL,       NULL,       1 << 1,       0,           -1 },
+	{ "Gimp",    	 NULL,       NULL,       1 << 6,       0,           -1 },
+	{ "firefox",  	 NULL,       NULL,       1 << 1,       0,           -1 },
+	{ "libreoffice", NULL,	     NULL,       1 << 4,       0,           -1 },
+	{ "lmms",        NULL,       NULL,       1 << 7,       0,           -1 },
+	{ "Pavucontrol", NULL,	     NULL,       1 << 5,       0,           -1 },
+	{ "KeePassXC",   NULL,	     NULL,	 1 << 5,       0,	    -1 },	
+	{ "electrum",     NULL,       NULL,       1 << 6,       0,           -1 },
+	{ "nheko",       NULL,       NULL,       1 << 3,       0,           -1 },
+	{ "tor-browser", NULL,       NULL,       1 << 2,       0,           -1 },
+	{ "nuclear",     NULL,       NULL,       1 << 7,       0,           -1 },
+	{ "monero-wallet-gui", NULL, NULL,	 1 << 6,       0,	    -1 },
 };
 
 /* layout(s) */
-static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
+static const float mfact     = 0.75; /* factor of master area size [0.05..0.95] */
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
 static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[]=",      tile },    /* first entry is default */
-	{ "><>",      NULL },    /* no layout function means floating behavior */
+	{ "",      tile },    /* first entry is default */
+	{ "",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
 };
 
@@ -54,15 +63,31 @@ static const Layout layouts[] = {
 	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
-#define SHCMD(cmd) { .v = (const char*[]){ "/usr/local/bin/st", "-c", cmd, NULL } }
+#define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+
+#include <X11/XF86keysym.h>
+#include "shiftview.c"
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "st", NULL };
-static const char *ffoxcmd[] = {"firefox", NULL };
+static const char *dmenucmd[] =   { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static const char *termcmd[]  =   { "st", NULL };
+static const char *ffoxcmd[] =    {"firefox", NULL };
+static const char *liboffcmd[] =  {"libreoffice", NULL};
+static const char *pavucmd[] =    {"pavucontrol", NULL};
+static const char *keepasscmd[] = {"keepassxc", NULL};
+static const char *lmmscmd[] =    {"lmms", NULL};
+static const char *gimpcmd[] =    {"gimp", NULL};
+static const char *electcmd[] =   {"electrum", NULL};
+static const char *nuclcmd[] =    {"nuclear", NULL};
+static const char *nhekocmd[] =   {"nheko", NULL};
+static const char *torcmd[] =     {"tor-browser", NULL};
+static const char *moncmd[] =	  {"monero-wallet-gui", NULL};
+static const char *voltoggle[] =  { "dwm-setvolume", "toggle", NULL };
+static const char *voldown[] = 	  { "dwm-setvolume", "down", NULL };
+static const char *volup[] = 	  { "dwm-setvolume", "up", NULL };
+static const char *sc[] =      	  {"dwm-sc", NULL};
 
-#include "shiftview.c"
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
@@ -77,7 +102,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
-	{ MODKEY|ShiftMask,             XK_t,      setlayout,      {.v = &layouts[0]} },
+	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY|ShiftMask,             XK_f,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY|ShiftMask,             XK_m,      setlayout,      {.v = &layouts[2]} },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
@@ -89,8 +114,22 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
 	{ MODKEY,			XK_f,      spawn,          {.v = ffoxcmd } },
+	{ MODKEY|ShiftMask,		XK_o,	   spawn, 	   {.v = liboffcmd } },
+	{ MODKEY|ShiftMask,		XK_p,	   spawn,          {.v = pavucmd } },
+	{ MODKEY|ShiftMask,             XK_k,      spawn,          {.v = keepasscmd } },
+	{ MODKEY|ShiftMask,             XK_l,      spawn,          {.v = lmmscmd } },
+	{ MODKEY|ShiftMask,		XK_g,      spawn,          {.v = gimpcmd } },
+	{ MODKEY|ShiftMask,             XK_e,      spawn,          {.v = electcmd } },
+	{ MODKEY|ShiftMask,		XK_t,	   spawn,	   {.v = torcmd } },
+	{ MODKEY|ShiftMask,		XK_n,	   spawn,	   {.v = nuclcmd } },
+	{ MODKEY|ShiftMask,		XK_h,	   spawn,	   {.v = nhekocmd } },
+	{ MODKEY|ShiftMask,		XK_e,	   spawn,	   {.v = moncmd } },
+	{ MODKEY,			XK_s,	   spawn,          {.v = sc } },
 	{ MODKEY,			XK_Left,   shiftview,      {.i = -1 } },
 	{ MODKEY,			XK_Right,  shiftview,      {.i = +1 } },
+	{ MODKEY,                       XK_minus,  spawn,          {.v = voltoggle } },
+	{ MODKEY,                       XK_Down,   spawn,          {.v = voldown } },
+	{ MODKEY,                       XK_Up,     spawn,          {.v = volup } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
