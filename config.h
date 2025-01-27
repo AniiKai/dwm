@@ -97,6 +97,8 @@ static const char *volup[] = 	  { "dwm-setvolume", "up", NULL };
 static const char *mountusb[] =	  { "mount-usb", NULL};
 static const char *umountusb[] =  { "umount-usb", NULL};
 static const char *sc[] =      	  { "dwm-sc", NULL};
+static const char *brghtup[] = 	  { "chb", "up", NULL};
+static const char *brghtdown[] =  { "chb", "down", NULL};
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -155,6 +157,8 @@ static Key keys[] = {
 	{ 0,	                        XF86XK_AudioMute,	   spawn,          {.v = voltoggle } },
 	{ 0,	                        XF86XK_AudioLowerVolume,   spawn,          {.v = voldown } },
 	{ 0,	                        XF86XK_AudioRaiseVolume,   spawn,          {.v = volup } },
+	{ MODKEY|ShiftMask,	        XK_Home,   spawn,          {.v = brghtup } },
+	{ MODKEY|ShiftMask,	        XK_End,   spawn,          {.v = brghtdown } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
